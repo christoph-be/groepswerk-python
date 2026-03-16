@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<header class="px-5 pt-14 pb-3 safe-top flex items-center gap-3" style="background:var(--bg-primary);">
+    <a href="{% url 'home' %}" class="w-10 h-10 rounded-full flex items-center justify-center tap" style="background:var(--bg-tertiary);">
+        <svg class="w-5 h-5" style="color:var(--text-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    </a>
+    <h1 class="font-display text-2xl font-bold" style="color:var(--text-primary)">Allergenen</h1>
+    <div class="ml-auto px-3 py-1 rounded-full text-xs font-bold" style="background:#FEF2F2; color:#EF4444;">{{ allergenen.count }} actief</div>
+</header>
+
+<div class="flex-1 overflow-y-auto scroll-area px-5 py-4" style="padding-bottom: 32px;">
+    <!-- Info -->
+    <div class="card p-4 mb-5 flex items-start gap-3" style="background:#FEF2F2; border-color:rgba(239,68,68,0.1);">
+        <span class="text-xl flex-shrink-0 mt-0.5">⚠️</span>
+        <p class="text-sm" style="color:#991B1B;">Deze allergenen worden <strong>altijd</strong> uitgesloten bij het genereren van recepten.</p>
+    </div>
+
+    <!-- List -->
+    <div class="space-y-3 mb-6">
+        {% for a in allergenen %}
+        <div class="card p-4 flex items-center gap-4 anim-{{ forloop.counter }}">
+            <span class="text-2xl">⚠️</span>
+            <div class="flex-1">
+                <p class="font-semibold" style="color:var(--text-primary)">{{ a.naam }}</p>
+            </div>
+            <form method="post" action="{% url 'allergeen_verwijder' a.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="w-8 h-8 rounded-full flex items-center justify-center tap" style="background:#FEF2F2; color:#EF4444;">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </form>
+        </div>
+        {% empty %}
+        <div class="py-8 text-center">
+            <p class="text-4xl mb-3">✅</p>
+            <p class="text-sm" style="color:var(--text-secondary)">Geen allergenen ingesteld</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Add -->
+    <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color:var(--text-muted);">Toevoegen</p>
+    <form method="post" action="{% url 'allergeen_toevoegen' %}" class="flex gap-2 mb-4">
+        {% csrf_token %}
+        <input type="text" name="naam" placeholder="Typ een allergeen..." class="input-field flex-1" required>
+        <button type="submit" class="w-12 h-12 rounded-xl flex items-center justify-center tap flex-shrink-0" style="background:#EF4444; color:white;">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6"/></svg>
+        </button>
+    </form>
+
+    <!-- Quick add suggestions -->
+    <div class="flex flex-wrap gap-2">
+        {% for sug in "Ei,Schaaldieren,Soja,Selderij,Vis,Sesam,Mosterd,Lupine"|make_list %}{% endfor %}
+        <form method="post" action="{% url 'allergeen_toevoegen' %}" class="inline">{% csrf_token %}<input type="hidden" name="naam" value="Ei"><button type="submit" class="chip chip-neutral tap text-sm">🥚 Ei</button></form>
+        <form method="post" action="{% url 'allergeen_toevoegen' %}" class="inline">{% csrf_token %}<input type="hidden" name="naam" value="Schaaldieren"><button type="submit" class="chip chip-neutral tap text-sm">🦐 Schaaldieren</button></form>
+        <form method="post" action="{% url 'allergeen_toevoegen' %}" class="inline">{% csrf_token %}<input type="hidden" name="naam" value="Soja"><button type="submit" class="chip chip-neutral tap text-sm">🫘 Soja</button></form>
+        <form method="post" action="{% url 'allergeen_toevoegen' %}" class="inline">{% csrf_token %}<input type="hidden" name="naam" value="Selderij"><button type="submit" class="chip chip-neutral tap text-sm">🌱 Selderij</button></form>
+        <form method="post" action="{% url 'allergeen_toevoegen' %}" class="inline">{% csrf_token %}<input type="hidden" name="naam" value="Vis"><button type="submit" class="chip chip-neutral tap text-sm">🐟 Vis</button></form>
+        <form method="post" action="{% url 'allergeen_toevoegen' %}" class="inline">{% csrf_token %}<input type="hidden" name="naam" value="Sesam"><button type="submit" class="chip chip-neutral tap text-sm">🌻 Sesam</button></form>
+    </div>
+</div>
+{% endblock %}
