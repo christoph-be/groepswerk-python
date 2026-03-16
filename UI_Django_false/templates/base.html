@@ -1,0 +1,174 @@
+{% load static %}<!DOCTYPE html>
+<html lang="nl" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#E8652B">
+    <title>{% block title %}KookKompas{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #FAFAF8; --bg-secondary: #FFFFFF; --bg-tertiary: #F5F3EF;
+            --text-primary: #1A1A1A; --text-secondary: #6B6B6B; --text-muted: #A3A3A3;
+            --border-light: rgba(0,0,0,0.06); --border-medium: rgba(0,0,0,0.1);
+            --shadow-soft: 0 2px 12px rgba(0,0,0,0.06); --shadow-medium: 0 4px 24px rgba(0,0,0,0.08);
+            --nav-bg: rgba(255,255,255,0.92); --overlay: rgba(0,0,0,0.4);
+        }
+        [data-theme="dark"] {
+            --bg-primary: #13131F; --bg-secondary: #1E1E2E; --bg-tertiary: #252538;
+            --text-primary: #F0F0F0; --text-secondary: #9B9BAD; --text-muted: #5C5C70;
+            --border-light: rgba(255,255,255,0.06); --border-medium: rgba(255,255,255,0.1);
+            --shadow-soft: 0 2px 12px rgba(0,0,0,0.2); --shadow-medium: 0 4px 24px rgba(0,0,0,0.3);
+            --nav-bg: rgba(30,30,46,0.92); --overlay: rgba(0,0,0,0.6);
+        }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { font-family: 'DM Sans', system-ui, sans-serif; overscroll-behavior: none;
+            background: var(--bg-primary); color: var(--text-primary); height: 100%; overflow: hidden; }
+        .font-display { font-family: 'Playfair Display', Georgia, serif; }
+        .scroll-area::-webkit-scrollbar { display: none; }
+        .scroll-area { -ms-overflow-style: none; scrollbar-width: none; }
+        .tap { transition: transform 0.15s, opacity 0.15s; cursor: pointer; }
+        .tap:active { transform: scale(0.97); opacity: 0.85; }
+        .tap-sm:active { transform: scale(0.98); }
+
+        @keyframes pageIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+        @keyframes fadeOut { from { opacity:1; } to { opacity:0; } }
+        @keyframes scaleIn { from { opacity:0; transform:scale(0.92); } to { opacity:1; transform:scale(1); } }
+        @keyframes slideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes bounce { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-4px); } }
+        @keyframes stagger { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-6px); } }
+        @keyframes cookPulse { 0%,100% { box-shadow:0 0 0 0 rgba(232,101,43,0.4); } 50% { box-shadow:0 0 0 12px rgba(232,101,43,0); } }
+
+        .page-enter { animation: pageIn 0.3s cubic-bezier(0.22,1,0.36,1); }
+        .anim-1 { animation: stagger 0.4s 0.05s both cubic-bezier(0.22,1,0.36,1); }
+        .anim-2 { animation: stagger 0.4s 0.12s both cubic-bezier(0.22,1,0.36,1); }
+        .anim-3 { animation: stagger 0.4s 0.2s both cubic-bezier(0.22,1,0.36,1); }
+        .anim-4 { animation: stagger 0.4s 0.28s both cubic-bezier(0.22,1,0.36,1); }
+        .scale-in { animation: scaleIn 0.3s cubic-bezier(0.22,1,0.36,1); }
+        .slide-up { animation: slideUp 0.35s cubic-bezier(0.22,1,0.36,1); }
+
+        .card { background: var(--bg-secondary); border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-soft); border-radius: 20px; }
+        .chip { display:inline-flex; align-items:center; gap:6px; padding:8px 14px;
+            border-radius:100px; font-size:14px; font-weight:500; }
+        .chip-danger { background: #FEF2F2; color: #DC2626; }
+        .chip-success { background: #EEFBF3; color: #128C49; }
+        .chip-neutral { background: var(--bg-tertiary); color: var(--text-secondary); }
+        .chip-kook { background: #FFF6EE; color: #CC4E1A; }
+        [data-theme="dark"] .chip-danger { background: rgba(220,38,38,0.15); }
+        [data-theme="dark"] .chip-success { background: rgba(26,175,93,0.15); }
+        [data-theme="dark"] .chip-kook { background: rgba(232,101,43,0.15); }
+
+        .hero-gradient { background: linear-gradient(135deg, #E8652B 0%, #FF8A3D 50%, #FFAA60 100%);
+            position:relative; overflow:hidden; }
+        .hero-gradient::after { content:''; position:absolute; top:-50%; right:-30%;
+            width:300px; height:300px; background:radial-gradient(circle,rgba(255,255,255,0.15) 0%,transparent 60%); border-radius:50%; }
+
+        .bottom-nav { background:var(--nav-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+            border-top:1px solid var(--border-light); }
+        .nav-item { color: var(--text-muted); }
+        .nav-item.active { color: #E8652B; }
+        .nav-fab { background:linear-gradient(135deg,#E8652B,#FF8A3D); box-shadow:0 4px 16px rgba(232,101,43,0.35); }
+        .nav-fab:active { transform:scale(0.92)!important; }
+
+        .input-field { background:var(--bg-tertiary); border:2px solid transparent; border-radius:14px;
+            padding:14px 18px; font-size:16px; color:var(--text-primary); transition:border-color 0.2s;
+            outline:none; width:100%; font-family:'DM Sans',system-ui,sans-serif; }
+        .input-field:focus { border-color:#E8652B; background:var(--bg-secondary); }
+        .input-field::placeholder { color: var(--text-muted); }
+
+        .modal-overlay { position:fixed; inset:0; background:var(--overlay); z-index:100;
+            opacity:0; pointer-events:none; transition:opacity 0.25s; }
+        .modal-overlay.open { opacity:1; pointer-events:auto; }
+        .bottom-sheet { position:fixed; bottom:0; left:0; right:0; background:var(--bg-secondary);
+            border-radius:28px 28px 0 0; z-index:101; transform:translateY(100%);
+            transition:transform 0.35s cubic-bezier(0.22,1,0.36,1); max-height:85vh; overflow-y:auto; }
+        .bottom-sheet.open { transform:translateY(0); }
+        .sheet-handle { width:40px; height:4px; background:var(--text-muted); border-radius:100px; margin:12px auto 0; opacity:0.4; }
+
+        .toast-container { position:fixed; top:60px; left:16px; right:16px; z-index:200;
+            display:flex; flex-direction:column; gap:8px; pointer-events:none; }
+        .toast { background:var(--text-primary); color:var(--bg-primary); padding:14px 20px;
+            border-radius:14px; font-weight:500; font-size:15px; box-shadow:var(--shadow-medium);
+            display:flex; align-items:center; gap:10px; animation:scaleIn 0.3s; pointer-events:auto; }
+
+        .safe-top { padding-top: max(env(safe-area-inset-top, 0px), 12px); }
+        .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 84px); }
+    </style>
+</head>
+<body>
+    <div class="h-full flex flex-col page-enter">
+
+        {% block content %}{% endblock %}
+
+        <!-- Bottom Navigation -->
+        {% block nav %}
+        <nav class="bottom-nav fixed bottom-0 left-0 right-0 z-50 px-6 py-2 flex justify-around items-center"
+             style="padding-bottom: max(env(safe-area-inset-bottom), 12px);">
+            <a href="{% url 'home' %}" class="nav-item {% if active_page == 'home' %}active{% endif %} flex flex-col items-center py-2 px-5 tap">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <span class="text-xs mt-1 font-medium">Home</span>
+            </a>
+            <a href="{% url 'genereer' %}" class="flex flex-col items-center tap">
+                <div class="nav-fab w-14 h-14 rounded-full flex items-center justify-center -mt-5">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v12m6-6H6"/></svg>
+                </div>
+            </a>
+            <a href="{% url 'recepten' %}" class="nav-item {% if active_page == 'recepten' %}active{% endif %} flex flex-col items-center py-2 px-5 tap">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                <span class="text-xs mt-1 font-medium">Recepten</span>
+            </a>
+        </nav>
+        {% endblock %}
+
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Global JS -->
+    <script>
+        // Dark Mode
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            updateThemeIcons();
+        }
+        function updateThemeIcons() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.querySelectorAll('.icon-sun').forEach(el => el.style.display = isDark ? 'none' : 'block');
+            document.querySelectorAll('.icon-moon').forEach(el => el.style.display = isDark ? 'block' : 'none');
+        }
+        // Restore theme
+        const saved = localStorage.getItem('theme');
+        if (saved) { document.documentElement.setAttribute('data-theme', saved); }
+        document.addEventListener('DOMContentLoaded', updateThemeIcons);
+
+        // Toast
+        function showToast(msg) {
+            const c = document.getElementById('toast-container');
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.textContent = msg;
+            c.appendChild(t);
+            setTimeout(() => { t.style.animation = 'fadeOut 0.25s forwards'; }, 2500);
+            setTimeout(() => t.remove(), 2800);
+        }
+
+        // Messages from Django (via URL param)
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('msg')) { showToast(decodeURIComponent(params.get('msg'))); }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,2 +1,22 @@
-# Mypy type checker cache
+# Omgevingsvariabelen
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
 .mypy_cache/
+
+# IDE
+.idea/
+.vscode/
+
+# Debug en test output
+debug_output.txt
+debug_output_utf8.txt
+protocol_output_utf8.txt
+protocol_results.txt
+
+# Claude/agent configuratie
+.agent/
+.claude/

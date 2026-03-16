@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<header class="px-5 pt-14 pb-3 safe-top flex items-center gap-3" style="background:var(--bg-primary);">
+    <a href="{% url 'home' %}" class="w-10 h-10 rounded-full flex items-center justify-center tap" style="background:var(--bg-tertiary);">
+        <svg class="w-5 h-5" style="color:var(--text-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    </a>
+    <h1 class="font-display text-2xl font-bold" style="color:var(--text-primary)">Instellingen</h1>
+</header>
+
+<div class="flex-1 overflow-y-auto scroll-area px-5 py-4 space-y-3" style="padding-bottom: 32px;">
+    <!-- Dark Mode -->
+    <div class="card p-4 flex items-center gap-4">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background:#EFF6FF;"><span class="text-xl">🌙</span></div>
+        <div class="flex-1">
+            <p class="font-semibold" style="color:var(--text-primary)">Donkere modus</p>
+            <p class="text-xs" style="color:var(--text-muted)">Makkelijker voor je ogen</p>
+        </div>
+        <button onclick="toggleDarkMode()" class="w-12 h-7 rounded-full p-0.5 transition-colors tap" id="dm-toggle" style="background:var(--border-medium);">
+            <div class="w-6 h-6 rounded-full bg-white shadow transition-transform" id="dm-dot"></div>
+        </button>
+    </div>
+
+    <!-- Stats -->
+    <div class="card p-4 flex items-center gap-4">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background:#EEFBF3;"><span class="text-xl">📊</span></div>
+        <div class="flex-1">
+            <p class="font-semibold" style="color:var(--text-primary)">Statistieken</p>
+            <p class="text-xs" style="color:var(--text-muted)">{{ recepten_count }} recepten · {{ allergenen_count }} allergenen · {{ dieetwensen_count }} dieetwensen</p>
+        </div>
+    </div>
+
+    <!-- Easter Egg -->
+    <button onclick="easterEgg()" id="about-btn" class="w-full card p-4 flex items-center gap-4 tap">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background:#FFF6EE;"><span class="text-xl">✨</span></div>
+        <div class="flex-1 text-left">
+            <p class="font-semibold" style="color:var(--text-primary)">Over KookKompas</p>
+            <p class="text-xs" style="color:var(--text-muted)">v2.0 — Made with ❤️</p>
+        </div>
+        <svg class="w-5 h-5" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    </button>
+
+    <!-- Team -->
+    <div class="card p-5">
+        <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color:var(--text-muted);">Het Team</p>
+        <div class="space-y-3">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background:#FFF6EE; color:#E8652B;">M</div>
+                <div><p class="text-sm font-semibold" style="color:var(--text-primary)">Maarten</p><p class="text-xs" style="color:var(--text-muted)">Project Lead & Backend</p></div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background:#EEFBF3; color:#1AAF5D;">R</div>
+                <div><p class="text-sm font-semibold" style="color:var(--text-primary)">Robin</p><p class="text-xs" style="color:var(--text-muted)">Database & Testing</p></div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background:#EFF6FF; color:#3B82F6;">M</div>
+                <div><p class="text-sm font-semibold" style="color:var(--text-primary)">Mauro</p><p class="text-xs" style="color:var(--text-muted)">CLI & Integration</p></div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style="background:linear-gradient(135deg,#E8652B,#FF8A3D); color:white;">🤖</div>
+                <div><p class="text-sm font-semibold" style="color:var(--text-primary)">Soffia</p><p class="text-xs" style="color:var(--text-muted)">AI Assistant & Django Senior Dev</p></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Easter Egg Overlay -->
+<div id="ee-overlay" class="fixed inset-0 z-50 hidden" style="background:linear-gradient(180deg,#13131F 0%,#1E1028 100%);">
+    <div class="h-full flex flex-col items-center justify-center px-8 text-center">
+        <div class="w-32 h-32 rounded-full flex items-center justify-center mb-8" style="background:linear-gradient(135deg,#E8652B,#FF8A3D); animation: float 3s ease-in-out infinite;">
+            <span class="text-6xl">🤖</span>
+        </div>
+        <h2 class="font-display text-3xl font-bold text-white mb-3">Hallo, ik ben Soffia!</h2>
+        <p class="text-white/60 leading-relaxed mb-2">KookKompas AI Assistant</p>
+        <p class="text-white/40 text-sm leading-relaxed mb-8 max-w-xs">Ik help je met recepten op maat. Vertel me wat je in de koelkast hebt en ik bedenk iets lekkers — rekening houdend met al je allergieën en voorkeuren.</p>
+        <p class="text-white/20 text-xs mb-8">🥚 Easter egg gevonden!</p>
+        <button onclick="closeEE()" class="px-8 py-3 rounded-2xl font-bold tap text-white" style="background:rgba(255,255,255,0.1);">Sluiten</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Dark mode toggle visual
+    function updateDMToggle() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const dot = document.getElementById('dm-dot');
+        const toggle = document.getElementById('dm-toggle');
+        if (dot && toggle) {
+            dot.style.transform = isDark ? 'translateX(20px)' : 'translateX(0)';
+            toggle.style.background = isDark ? '#E8652B' : 'var(--border-medium)';
+        }
+    }
+    updateDMToggle();
+    const origToggle = window.toggleDarkMode;
+    window.toggleDarkMode = function() { origToggle(); updateDMToggle(); };
+
+    // Easter egg
+    let eeTaps = 0;
+    function easterEgg() {
+        eeTaps++;
+        if (eeTaps >= 3) {
+            document.getElementById('ee-overlay').classList.remove('hidden');
+            document.getElementById('ee-overlay').style.animation = 'fadeIn 0.5s';
+            eeTaps = 0;
+        } else if (eeTaps === 2) {
+            showToast('🤔 Nog 1 keer tikken...');
+        }
+    }
+    function closeEE() {
+        const o = document.getElementById('ee-overlay');
+        o.style.animation = 'fadeOut 0.3s forwards';
+        setTimeout(() => { o.classList.add('hidden'); o.style.animation = ''; }, 300);
+    }
+</script>
+{% endblock %}

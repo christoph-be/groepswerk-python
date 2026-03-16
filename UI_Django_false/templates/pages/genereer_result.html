@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<header class="px-5 pt-14 pb-3 safe-top flex items-center gap-3" style="background:var(--bg-primary);">
+    <a href="{% url 'genereer' %}" class="w-10 h-10 rounded-full flex items-center justify-center tap" style="background:var(--bg-tertiary);">
+        <svg class="w-5 h-5" style="color:var(--text-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    </a>
+    <h1 class="font-display text-2xl font-bold" style="color:var(--text-primary)">Resultaat</h1>
+</header>
+
+<div class="flex-1 overflow-y-auto scroll-area safe-bottom px-5 py-5 scale-in">
+    <!-- Recipe Hero -->
+    <div class="rounded-3xl p-6 text-white mb-5 relative overflow-hidden" style="background:linear-gradient(135deg, #E8652B 0%, #CC4E1A 100%);">
+        <div class="absolute top-0 right-0 w-40 h-40 rounded-full" style="background:rgba(255,255,255,0.08); transform:translate(30%,-30%);"></div>
+        {% if is_new %}<span class="inline-block bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold mb-3 uppercase tracking-wider">✨ Nieuw!</span>{% endif %}
+        <span class="inline-block bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium mb-3">{{ recept.categorie_emoji }} {{ recept.categorie }}</span>
+        <h2 class="font-display text-2xl font-bold mb-3 leading-tight">{{ recept.naam }}</h2>
+        <div class="flex items-center gap-5 text-white/80 text-sm">
+            <span class="flex items-center gap-1.5">⏱️ {{ recept.bereidingstijd }} min</span>
+            <span class="flex items-center gap-1.5">👥 {{ recept.personen }} personen</span>
+        </div>
+    </div>
+
+    <!-- Ingrediënten -->
+    <div class="card p-5 mb-4">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#FFF6EE;"><span class="text-lg">🧾</span></div>
+            <h3 class="font-bold text-base" style="color:var(--text-primary)">Ingrediënten</h3>
+        </div>
+        <ul class="space-y-3">
+            {% for ing in recept.ingredienten_lijst %}
+            <li class="flex items-center gap-3 text-sm" style="color:var(--text-secondary);">
+                <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:#E8652B;"></span>{{ ing }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Bereiding -->
+    <div class="card p-5 mb-5">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#EEFBF3;"><span class="text-lg">👨‍🍳</span></div>
+            <h3 class="font-bold text-base" style="color:var(--text-primary)">Bereiding</h3>
+        </div>
+        <ol class="space-y-4">
+            {% for stap in recept.bereiding_lijst %}
+            <li class="flex gap-3">
+                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style="background:var(--bg-tertiary); color:var(--text-secondary);">{{ forloop.counter }}</span>
+                <span class="text-sm pt-1" style="color:var(--text-secondary);">{{ stap }}</span>
+            </li>
+            {% endfor %}
+        </ol>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-3 mb-4">
+        <a href="{% url 'recept_detail' recept.pk %}" class="flex-1 card p-4 tap flex items-center justify-center gap-2 font-semibold text-sm" style="color:#1AAF5D;">
+            📖 Bekijk recept
+        </a>
+        <a href="{% url 'genereer' %}" class="flex-1 card p-4 tap flex items-center justify-center gap-2 font-semibold text-sm" style="color:#E8652B;">
+            🔄 Opnieuw
+        </a>
+    </div>
+</div>
+{% endblock %}

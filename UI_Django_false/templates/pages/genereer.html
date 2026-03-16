@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Header -->
+<header class="px-5 pt-14 pb-3 safe-top flex items-center gap-3" style="background:var(--bg-primary);">
+    <a href="{% url 'home' %}" class="w-10 h-10 rounded-full flex items-center justify-center tap" style="background:var(--bg-tertiary);">
+        <svg class="w-5 h-5" style="color:var(--text-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    </a>
+    <h1 class="font-display text-2xl font-bold" style="color:var(--text-primary)">Recept Genereren</h1>
+</header>
+
+<div class="flex-1 overflow-y-auto scroll-area safe-bottom">
+    <!-- Active Profile -->
+    {% if allergenen or dieetwensen %}
+    <div class="px-5 py-3 flex flex-wrap gap-2" style="border-bottom:1px solid var(--border-light);">
+        {% for a in allergenen %}<span class="chip chip-danger text-xs">⚠️ {{ a.naam }}</span>{% endfor %}
+        {% for d in dieetwensen %}<span class="chip chip-success text-xs">✓ {{ d.naam }}</span>{% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'genereer_start' %}" id="gen-form" class="px-5 py-6">
+        {% csrf_token %}
+
+        <label class="block font-semibold text-base mb-1" style="color:var(--text-primary)">Welke ingrediënten heb je?</label>
+        <p class="text-sm mb-4" style="color:var(--text-secondary)">Voeg toe wat je in de koelkast hebt</p>
+
+        <!-- Tags Display -->
+        <div id="tags-display" class="flex flex-wrap gap-2 mb-4"></div>
+
+        <!-- Hidden field dat naar server gaat -->
+        <input type="hidden" name="ingredienten" id="ingredienten-hidden" value="">
+
+        <!-- Input Row -->
+        <div class="flex gap-2 mb-5">
+            <input type="text" id="ing-input" placeholder="bv. knoflook, paprika..." class="input-field flex-1">
+            <button type="button" onclick="addIng()" class="w-12 h-12 rounded-xl flex items-center justify-center tap flex-shrink-0" style="background:#E8652B; color:white;">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6"/></svg>
+            </button>
+        </div>
+
+        <!-- Suggesties -->
+        <p class="text-xs font-semibold uppercase tracking-wider mb-2" style="color:var(--text-muted);">Suggesties</p>
+        <div class="flex flex-wrap gap-2 mb-8" id="suggestions">
+            <button type="button" onclick="addSug(this,'Knoflook')" class="chip chip-neutral tap text-sm">🧄 Knoflook</button>
+            <button type="button" onclick="addSug(this,'Paprika')" class="chip chip-neutral tap text-sm">🫑 Paprika</button>
+            <button type="button" onclick="addSug(this,'Champignons')" class="chip chip-neutral tap text-sm">🍄 Champignons</button>
+            <button type="button" onclick="addSug(this,'Wortel')" class="chip chip-neutral tap text-sm">🥕 Wortel</button>
+            <button type="button" onclick="addSug(this,'Ei')" class="chip chip-neutral tap text-sm">🥚 Ei</button>
+            <button type="button" onclick="addSug(this,'Rijst')" class="chip chip-neutral tap text-sm">🍚 Rijst</button>
+        </div>
+
+        <!-- Maaltijd Type -->
+        <p class="text-xs font-semibold uppercase tracking-wider mb-2" style="color:var(--text-muted);">Type maaltijd</p>
+        <div class="flex gap-2 mb-8">
+            <button type="button" onclick="pickCat(this,'Ontbijt')" class="chip chip-neutral tap flex-1 justify-center text-sm cat-btn">🌅 Ontbijt</button>
+            <button type="button" onclick="pickCat(this,'Lunch')" class="chip chip-neutral tap flex-1 justify-center text-sm cat-btn">☀️ Lunch</button>
+            <button type="button" onclick="pickCat(this,'Diner')" class="chip tap flex-1 justify-center text-sm cat-btn active" style="background:#FFF6EE; color:#CC4E1A; border:2px solid #E8652B;">🌙 Diner</button>
+        </div>
+        <input type="hidden" name="categorie" id="cat-hidden" value="Diner">
+
+        <!-- Generate Button -->
+        <button type="submit" id="gen-btn" class="w-full py-4 rounded-2xl font-bold text-lg tap text-white flex items-center justify-center gap-3" style="background:linear-gradient(135deg,#E8652B,#FF8A3D); box-shadow:0 6px 20px rgba(232,101,43,0.3);">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Genereer met AI
+        </button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const tags = [];
+
+    function addIng() {
+        const input = document.getElementById('ing-input');
+        const val = input.value.trim();
+        if (val && !tags.includes(val)) {
+            tags.push(val);
+            renderTags();
+            input.value = '';
+        }
+        input.focus();
+    }
+
+    function addSug(btn, name) {
+        if (!tags.includes(name)) {
+            tags.push(name);
+            renderTags();
+        }
+        btn.style.opacity = '0.4';
+        btn.disabled = true;
+    }
+
+    function removeIng(name) {
+        const idx = tags.indexOf(name);
+        if (idx > -1) tags.splice(idx, 1);
+        renderTags();
+    }
+
+    function renderTags() {
+        const d = document.getElementById('tags-display');
+        d.innerHTML = tags.map(t =>
+            `<span class="chip chip-kook scale-in">${t} <button type="button" onclick="removeIng('${t}')" class="ml-1 text-lg leading-none opacity-60">×</button></span>`
+        ).join('');
+        document.getElementById('ingredienten-hidden').value = tags.join(',');
+    }
+
+    function pickCat(btn, cat) {
+        document.querySelectorAll('.cat-btn').forEach(b => {
+            b.style.background = ''; b.style.color = ''; b.style.border = '';
+            b.className = b.className.replace(' active','');
+        });
+        btn.style.background = '#FFF6EE'; btn.style.color = '#CC4E1A';
+        btn.style.border = '2px solid #E8652B'; btn.className += ' active';
+        document.getElementById('cat-hidden').value = cat;
+    }
+
+    document.getElementById('ing-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); addIng(); }
+    });
+
+    // Loading state on submit
+    document.getElementById('gen-form').addEventListener('submit', function() {
+        const btn = document.getElementById('gen-btn');
+        btn.innerHTML = '<span style="animation:spin 1s linear infinite; display:inline-block;">🍳</span> Even koken...';
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+    });
+</script>
+{% endblock %}
