@@ -9,7 +9,7 @@
 from ai.recepten_ai import (
     genereer_recept,           # De chef-kok
     genereer_boodschappenlijst, # Het boodschappenlijstje
-    check_api_configuratie,    # Even checken of de sleutel werkt
+    check_ollama_status,    # Even checken of de sleutel werkt
     test_ai_verbinding,        # Hallo, ben je daar?
     splits_ingredienten,       # Hakwerk
     formatteer_recept          # Mooi opdienen
@@ -27,7 +27,7 @@ from ai.recepten_ai import (
 __all__ = [
     "genereer_recept",
     "genereer_boodschappenlijst",
-    "check_api_configuratie",
+    "check_ollama_status",
     "test_ai_verbinding",
     "splits_ingredienten",
     "formatteer_recept"

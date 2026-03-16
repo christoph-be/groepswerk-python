@@ -11,10 +11,12 @@ Verantwoordelijkheden:
 """
 
 import os
-from dotenv import load_dotenv
 
-# === .env laden ===
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 # === DATABASE CONFIGURATIE ===
 DB_CONFIG = {
@@ -24,11 +26,9 @@ DB_CONFIG = {
     'database': os.getenv('DB_DATABASE', 'kookcompas')
 }
 
-# === AI CONFIGURATIE ===
-ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY', '')
-
-# Claude 4.5 Haiku - snel en goedkoop
-AI_MODEL = "claude-haiku-4-5-20251001"
+# === AI CONFIGURATIE (Ollama - lokaal) ===
+OLLAMA_URL = os.getenv('OLLAMA_URL', 'http://localhost:11434')
+AI_MODEL = os.getenv('AI_MODEL', 'qwen2.5-coder:7b')
 AI_MAX_TOKENS = 1024
 
 # === APP CONFIGURATIE ===

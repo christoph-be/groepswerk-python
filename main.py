@@ -12,9 +12,32 @@ Verantwoordelijkheden:
 
 import os
 import sys
+import subprocess
 
 # Voeg project root toe aan path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+
+def start_ollama_als_nodig():
+    """Start Ollama server automatisch als die niet draait."""
+    import urllib.request
+    try:
+        urllib.request.urlopen('http://localhost:11434', timeout=3)
+    except Exception:
+        try:
+            subprocess.Popen(
+                ['ollama', 'serve'],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
+            )
+            import time
+            time.sleep(3)
+        except FileNotFoundError:
+            pass
+
+
+start_ollama_als_nodig()
 
 from config import APP_NAAM, VERSION
 from database.db_connection import maak_connectie, sluit_connectie
@@ -42,7 +65,7 @@ try:
     from ai.recepten_ai import (
         genereer_recept,
         genereer_boodschappenlijst,
-        check_api_configuratie,
+        check_ollama_status,
         formatteer_recept
     )
     AI_BESCHIKBAAR = True
@@ -114,13 +137,13 @@ def recept_genereren_flow():
     # Check of AI beschikbaar is
     if not AI_BESCHIKBAAR:
         toon_foutmelding("AI module kon niet geladen worden.")
-        toon_info("Installeer anthropic: pip install anthropic")
+        toon_info("Zorg dat Ollama draait op de achtergrond.")
         wacht_op_enter()
         return
 
-    if not check_api_configuratie():
+    if not check_ollama_status():
         toon_foutmelding("AI is niet geconfigureerd.")
-        toon_info("Vul je ANTHROPIC_API_KEY in het .env bestand.")
+        toon_info("Controleer of Ollama draait en het model beschikbaar is.")
         wacht_op_enter()
         return
 
