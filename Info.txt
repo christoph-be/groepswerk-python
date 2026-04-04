@@ -1,7 +1,12 @@
+Het wachtwoord van de database moeten jullie voor jullie zelf even aanpassen.
+
+
+inlog van jullie die al in database staat
+of als jullie zelf 1 willen aanmaken mag natuurlijk ook
+Dit was gewoon om het frame van gebruikers met database te testen
+Nu kan een nieuwe gebruiker aangemaakt worden en deze word in de database opgeslagen
+
 Sofia - sofia@exaple.com
 Christophe - christophe@exaple.com
 Daan - daan@exaple.com
 Yannick - yannick@exaple.com
-
-
-Dit was gewoon om het frame van gebruikers met database te testen
