@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerechten</title>
+</head>
+<body>
+<h1>Gerechten</h1>
+
+<form method="POST">
+    <input type="text" name="gerecht" placeholder="Gerecht" required>
+    <input type="text" name="ingredienten" placeholder="Ingrediënten" required>
+    <button type="submit">Toevoegen</button>
+</form>
+
+<ul>
+{% for g in gerechten %}
+    <li>
+        {{ g[1] }} - {{ g[2] }}
+        <a href="/Gerecht/update/{{ g[0] }}">Bewerken</a>
+        <a href="/Gerecht/delete/{{ g[0] }}">Verwijderen</a>
+    </li>
+{% endfor %}
+</ul>
+
+</body>
+</html>
