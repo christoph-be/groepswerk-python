@@ -37,7 +37,7 @@ CREATE TABLE `gebruikers` (
 
 LOCK TABLES `gebruikers` WRITE;
 /*!40000 ALTER TABLE `gebruikers` DISABLE KEYS */;
-INSERT INTO `gebruikers` VALUES (1,'Sofia','sofia@example.com'),(2,'Christophe','christophe@example.com'),(3,'Daan','daan@example.com'),(4,'Yannick','yannick@example.com');
+INSERT INTO `gebruikers` VALUES (1,'Soffia','soffia@example.com'),(2,'Christoph','christoph@example.com'),(3,'Daan','daan@example.com'),(4,'Yannick','yannick@example.com');
 /*!40000 ALTER TABLE `gebruikers` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
