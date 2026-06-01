@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Opgeslagen gerechten (lokale database)</h2>
+
+{% if meals %}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Naam</th>
+        <th>Categorie</th>
+        <th>Herkomst</th>
+        <th>Acties</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for meal in meals %}
+        <tr>
+          <td>{{ meal.id }}</td>
+          <td>{{ meal.name }}</td>
+          <td>{{ meal.category }}</td>
+          <td>{{ meal.area }}</td>
+          <td>
+            <a href="{{ url_for('meal_detail', meal_id=meal.id) }}" class="btn btn-sm btn-primary">Detail</a>
+            <a href="{{ url_for('edit_meal', meal_id=meal.id) }}" class="btn btn-sm btn-warning">Bewerken</a>
+            <form method="post" action="{{ url_for('delete_meal', meal_id=meal.id) }}"
+                  style="display:inline-block;"
+                  onsubmit="return confirm('Zeker weten dat je dit gerecht wilt verwijderen?');">
+              <button type="submit" class="btn btn-sm btn-danger">Verwijderen</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>Er zijn nog geen gerechten opgeslagen.</p>
+{% endif %}
+{% endblock %}

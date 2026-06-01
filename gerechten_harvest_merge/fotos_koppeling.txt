@@ -1,0 +1,12 @@
+fotos koppelen aan de flask app
+================================
+
+alleen de fotomap moet naar test groepswerk/static/fotos/
+
+de img tags in de templates hoeven NIET aangepast te worden.
+de thumbnail_url in de databank wijst nu rechtstreeks naar
+/static/fotos/<id>.jpg, dus christoph zijn bestaande
+{{ local_meal.thumbnail_url }} werkt meteen.
+
+voor de api_meal (linker kolom in meal_detail.html) blijft het
+de externe themealdb url tonen, want die data komt live van de api.

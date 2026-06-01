@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Gerecht detail (ID: {{ meal_id }})</h2>
+
+<div class="row">
+  <div class="col-md-6">
+    <h4>API-data (TheMealDB)</h4>
+    {% if api_meal %}
+      <p><strong>Naam:</strong> {{ api_meal.strMeal }}</p>
+      <p><strong>Categorie:</strong> {{ api_meal.strCategory }}</p>
+      <p><strong>Herkomst:</strong> {{ api_meal.strArea }}</p>
+      {% if api_meal.strMealThumb %}
+        <img src="{{ api_meal.strMealThumb }}" class="img-fluid mb-3" alt="{{ api_meal.strMeal }}">
+      {% endif %}
+
+      <h5>Allergenen</h5>
+      {% if allergens and allergens|length > 0 %}
+        <ul>
+          {% for allergen in allergens %}
+            <li>{{ allergen.allergen }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>Geen allergenen bekend voor dit gerecht.</p>
+      {% endif %}
+
+      <h5>Ingrediënten</h5>
+      <ul>
+        {% for ing in ingredients %}
+          <li>{{ ing }}</li>
+        {% endfor %}
+      </ul>
+
+      <h5>Instructies</h5>
+      <p style="white-space: pre-line;">{{ api_meal.strInstructions }}</p>
+    {% else %}
+      <p>Geen API-data gevonden.</p>
+    {% endif %}
+  </div>
+
+  <div class="col-md-6">
+    <h4>Lokale database</h4>
+    {% if local_meal %}
+      <p><strong>Naam:</strong> {{ local_meal.name }}</p>
+      <p><strong>Categorie:</strong> {{ local_meal.category }}</p>
+      <p><strong>Herkomst:</strong> {{ local_meal.area }}</p>
+      {% if local_meal.thumbnail_url %}
+        <img src="{{ local_meal.thumbnail_url }}" class="img-fluid mb-3" alt="{{ local_meal.name }}">
+      {% endif %}
+      <h5>Instructies (lokaal)</h5>
+      <p style="white-space: pre-line;">{{ local_meal.instructions }}</p>
+
+      <a href="{{ url_for('edit_meal', meal_id=local_meal.id) }}" class="btn btn-warning">Bewerken</a>
+      <form method="post" action="{{ url_for('delete_meal', meal_id=local_meal.id) }}"
+            style="display:inline-block;"
+            onsubmit="return confirm('Zeker weten dat je dit gerecht wilt verwijderen?');">
+        <button type="submit" class="btn btn-danger">Verwijderen</button>
+      </form>
+    {% else %}
+      <p>Dit gerecht is nog niet opgeslagen in de lokale database.</p>
+      <a href="{{ url_for('save_meal_from_api', meal_id=meal_id) }}" class="btn btn-success">
+        Opslaan in DB
+      </a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

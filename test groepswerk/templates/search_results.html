@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Resultaten voor ingrediënt: "{{ ingredient }}"</h2>
+
+{% if meals %}
+  <div class="row">
+    {% for meal in meals %}
+      <div class="col-md-4 mb-3">
+        <div class="card h-100">
+          {% if meal.strMealThumb %}
+            <img src="{{ meal.strMealThumb }}" class="card-img-top" alt="{{ meal.strMeal }}">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ meal.strMeal }}</h5>
+            <a href="{{ url_for('meal_detail', meal_id=meal.idMeal) }}" class="btn btn-sm btn-outline-primary">
+              Details
+            </a>
+            <a href="{{ url_for('save_meal_from_api', meal_id=meal.idMeal) }}" class="btn btn-sm btn-success">
+              Opslaan in DB
+            </a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>Geen resultaten gevonden.</p>
+{% endif %}
+{% endblock %}

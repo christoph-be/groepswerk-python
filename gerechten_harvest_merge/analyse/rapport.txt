@@ -1,0 +1,116 @@
+KOOKKOMPAS ANALYSE - RAPPORT
+============================
+
+databank: recipe_search
+bron: themealdb.com
+
+ALGEMEEN
+--------
+aantal gerechten:        605
+aantal unieke ingredienten: 836
+aantal koppelingen:      6157
+gemiddeld per gerecht:   10.2 ingredienten
+
+TOP 20 MEEST GEBRUIKTE INGREDIENTEN
+===================================
+
+ingredient     in # gerechten  kans dat random gerecht het bevat  
+------------------------------------------------------------------
+salt           183             30.2                               
+garlic         178             29.4                               
+onion          170             28.1                               
+olive oil      163             26.9                               
+butter         142             23.5                               
+sugar          99              16.4                               
+egg            95              15.7                               
+water          89              14.7                               
+milk           87              14.4                               
+vegetable oil  80              13.2                               
+parsley        77              12.7                               
+pepper         76              12.6                               
+potatoes       74              12.2                               
+carrots        73              12.1                               
+eggs           72              11.9                               
+soy sauce      63              10.4                               
+plain flour    62              10.2                               
+flour          60              9.9                                
+spring onions  56              9.3                                
+lemon          55              9.1                                
+
+TOP 10 CATEGORIEEN
+==================
+
+categorie      aantal gerechten  
+---------------------------------
+Dessert        128               
+Vegetarian     82                
+Beef           79                
+Seafood        70                
+Chicken        65                
+Pork           45                
+Side           44                
+Lamb           28                
+Miscellaneous  24                
+Breakfast      15                
+
+TOP 10 HERKOMSTEN
+=================
+
+herkomst       aantal gerechten  
+---------------------------------
+British        59                
+Spanish        48                
+United States  33                
+Turkish        30                
+France         28                
+Vietnamese     27                
+Jamaican       27                
+Chinese        27                
+Thai           27                
+Polish         27                
+
+ALLERGENEN - VOORKOMEN
+======================
+
+allergeen  in # gerechten  kans %  
+-----------------------------------
+Lactose    296             48.9    
+Gluten     272             45.0    
+Eggs       204             33.7    
+Soy        64              10.6    
+Fish       58              9.6     
+Nuts       42              6.9     
+Shellfish  39              6.4     
+Sesame     34              5.6     
+Celery     29              4.8     
+Peanuts    25              4.1     
+
+gerechten zonder gedetecteerde allergenen: 107 (17.7%)
+
+ingredienten die maar in 1 gerecht voorkomen: 355 (42.5% van alle ingredienten)
+
+MEEST COMPLEXE KEUKENS (gemiddeld aantal ingredienten per gerecht)
+==================================================================
+
+herkomst    gem ingredienten  
+------------------------------
+Chinese     12.8              
+India       12.3              
+Mexican     12.3              
+Moroccan    11.7              
+Malaysian   11.6              
+Vietnamese  11.6              
+Portuguese  11.5              
+Uruguayan   11.4              
+Thai        11.3              
+Algerian    11.1              
+
+EASTER EGGS (verzonnen ingredienten)
+====================================
+
+ingredient                         in # gerechten  
+---------------------------------------------------
+cavia-kaas uit de alpen            5               
+glimworm-honing uit de mangroves   1               
+pinguin-ham uit antartica          2               
+vampier-tomaten uit transsylvanie  1               

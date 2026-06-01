@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Gerecht bewerken</h2>
+
+<form method="post">
+  <div class="mb-3">
+    <label class="form-label">Naam</label>
+    <input type="text" class="form-control" name="name" value="{{ meal.name }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Categorie</label>
+    <input type="text" class="form-control" name="category" value="{{ meal.category }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Herkomst</label>
+    <input type="text" class="form-control" name="area" value="{{ meal.area }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Thumbnail URL</label>
+    <input type="text" class="form-control" name="thumbnail_url" value="{{ meal.thumbnail_url }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Instructies</label>
+    <textarea class="form-control" name="instructions" rows="6">{{ meal.instructions }}</textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">Opslaan</button>
+  <a href="{{ url_for('meals_list') }}" class="btn btn-secondary">Annuleren</a>
+</form>
+{% endblock %}
