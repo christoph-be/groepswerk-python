@@ -1,16 +1,96 @@
+```html
 {% extends "base.html" %}
+
 {% block content %}
-<div class="card">
-    <div class="card-body">
-        <h1 class="card-title">Zoek gerechten op ingrediënt</h1>
-        <form method="post" action="{{ url_for('search') }}">
-            <div class="mb-3">
-                <label for="ingredient" class="form-label">Ingrediënt</label>
-                <input type="text" class="form-control" id="ingredient" name="ingredient"
-                       placeholder="bv. chicken, beef, tomato">
+
+<div class="row">
+
+    <!-- Zoek gerechten -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h1 class="card-title">Zoek gerechten op ingrediënt</h1>
+
+                <form method="post" action="{{ url_for('search') }}">
+                    <div class="mb-3">
+                        <label for="ingredient" class="form-label">
+                            Ingrediënt
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               id="ingredient"
+                               name="ingredient"
+                               placeholder="bv. chicken, beef, tomato">
+                    </div>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Zoeken
+                    </button>
+                </form>
             </div>
-            <button type="submit" class="btn btn-primary">Zoeken</button>
-        </form>
+        </div>
     </div>
+
+    <!-- Gebruiker -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="card-title">Gebruiker</h2>
+
+                <form method="POST"
+                      action="{{ url_for('gebruiker') }}">
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Naam
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               name="naam"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Email
+                        </label>
+
+                        <input type="email"
+                               class="form-control"
+                               name="email"
+                               required>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit"
+                                class="btn btn-primary"
+                                name="actie"
+                                value="aanmaken">
+                            Aanmaken
+                        </button>
+
+                        <button type="submit"
+                                class="btn btn-success"
+                                name="actie"
+                                value="aanmelden">
+                            Aanmelden
+                        </button>
+                    </div>
+                </form>
+
+                {% if antwoord %}
+                    <div class="alert alert-info mt-3">
+                        {{ antwoord }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
 </div>
+
 {% endblock %}
+```

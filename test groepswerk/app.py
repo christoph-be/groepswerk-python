@@ -1,188 +1,326 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
-from config import Config
-from services import mealdb_api
-from services import db_service
-from mysql.connector import Error
-from services.allergen_map import ALLERGEN_MAP
 
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash
+)
+
+from config import Config
+from services.mealdb_api import (
+    search_meals_by_ingredient,
+    get_meal_detail,
+    extract_ingredients_from_meal
+)
+from services.db_service import (
+    fetch_all_meals,
+    fetch_meal_by_id,
+    save_meal,
+    update_meal_db,
+    delete_meal,
+    link_meal_ingredient
+)
+from services.allergen_map import ALLERGEN_MAP
 
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
 
-
-def validate_ingredient_input(ingredient: str):
-    ingredient = ingredient.strip()
-    if not ingredient:
-        return False, "Ingrediënt mag niet leeg zijn."
-    if any(char.isdigit() for char in ingredient):
-        return False, "Ingrediënt mag geen cijfers bevatten."
-    return True, ingredient
-
-
+# -------------------------
+# HOME
+# -------------------------
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template(
+        "index.html",
+        antwoord=None
+    )
 
 
-@app.route("/search", methods=["POST"])
-def search():
-    ingredient = request.form.get("ingredient", "")
-    is_valid, result = validate_ingredient_input(ingredient)
-    if not is_valid:
-        flash(result, "error")
-        return redirect(url_for("index"))
+# -------------------------
+# GEBRUIKER
+# tijdelijke fake login
+# -------------------------
+@app.route(
+    "/gebruiker",
+    methods=["POST"]
+)
+def gebruiker():
 
-    ingredient = result
-    try:
-        meals = mealdb_api.search_meals_by_ingredient(ingredient)
-        return render_template("search_results.html", meals=meals, ingredient=ingredient)
-    except Exception as e:
-        print(e)
-        return render_template(
-            "error.html",
-            message="Er ging iets mis bij het opvragen van de API-resultaten.",
+    naam = request.form["naam"]
+    email = request.form["email"]
+    actie = request.form["actie"]
+
+    if actie == "aanmaken":
+        antwoord = (
+            f"Gebruiker {naam} "
+            f"({email}) aangemaakt"
         )
 
+        flash(
+            "Gebruiker aangemaakt",
+            "success"
+        )
+
+    else:
+        antwoord = (
+            f"{naam} aangemeld"
+        )
+
+        flash(
+            "Aanmelden gelukt",
+            "success"
+        )
+
+    return render_template(
+        "index.html",
+        antwoord=antwoord
+    )
 
 
+# -------------------------
+# SEARCH
+# -------------------------
+@app.route(
+    "/search",
+    methods=["POST"]
+)
+def search():
 
+    ingredient = request.form.get(
+        "ingredient"
+    )
+
+    meals = search_meals_by_ingredient(
+        ingredient
+    )
+
+    return render_template(
+        "search_results.html",
+        meals=meals,
+        ingredient=ingredient
+    )
+
+
+# -------------------------
+# DETAIL
+# -------------------------
 @app.route("/meal/<int:meal_id>")
 def meal_detail(meal_id):
-    try:
-        local_meal = db_service.fetch_meal_by_id(meal_id)
-    except Error:
-        local_meal = None
 
-    api_meal = None
-    ingredients = []
-    try:
-        api_meal = mealdb_api.get_meal_detail(meal_id)
-        if api_meal:
-            ingredients = mealdb_api.extract_ingredients_from_meal(api_meal)
-    except Exception as e:
-        print(e)
+    api_meal = get_meal_detail(
+        meal_id
+    )
 
-    # Allergenen ophalen
-    try:
-        allergens = db_service.call_procedure("get_meal_allergens", (meal_id,))
-    except:
-        allergens = []
+    if not api_meal:
+        flash(
+            "Geen gerecht gevonden",
+            "error"
+        )
+        return redirect(
+            url_for("index")
+        )
+
+    ingredients = (
+        extract_ingredients_from_meal(
+            api_meal
+        )
+    )
+
+    allergens = []
+
+    for ingredient in ingredients:
+        key = ingredient.lower()
+
+        if key in ALLERGEN_MAP:
+            allergens.append({
+                "allergen":
+                ALLERGEN_MAP[key]
+            })
+
+    local_meal = fetch_meal_by_id(
+        meal_id
+    )
 
     return render_template(
         "meal_detail.html",
         meal_id=meal_id,
-        local_meal=local_meal,
         api_meal=api_meal,
         ingredients=ingredients,
-        allergens=allergens
+        allergens=allergens,
+        local_meal=local_meal
     )
 
 
+# -------------------------
+# SAVE FROM API
+# -------------------------
+@app.route(
+    "/save/<int:meal_id>"
+)
+def save_meal_from_api(
+    meal_id
+):
 
+    meal = get_meal_detail(
+        meal_id
+    )
+
+    if not meal:
+        flash(
+            "Meal niet gevonden",
+            "error"
+        )
+
+        return redirect(
+            url_for("index")
+        )
+
+    existing = fetch_meal_by_id(
+        meal_id
+    )
+
+    if existing:
+        flash(
+            "Meal bestaat al",
+            "warning"
+        )
+
+        return redirect(
+            url_for(
+                "meal_detail",
+                meal_id=meal_id
+            )
+        )
+
+    save_meal(
+        meal_id,
+        meal["strMeal"],
+        meal["strCategory"],
+        meal["strArea"],
+        meal["strInstructions"],
+        meal["strMealThumb"]
+    )
+
+    ingredients = (
+        extract_ingredients_from_meal(
+            meal
+        )
+    )
+
+    for ingredient in ingredients:
+        link_meal_ingredient(
+            meal_id,
+            ingredient
+        )
+
+    flash(
+        "Meal opgeslagen",
+        "success"
+    )
+
+    return redirect(
+        url_for(
+            "meal_detail",
+            meal_id=meal_id
+        )
+    )
+
+
+# -------------------------
+# LIST
+# -------------------------
 @app.route("/meals")
 def meals_list():
-    try:
-        meals = db_service.fetch_all_meals()
-        return render_template("meals_list.html", meals=meals)
-    except Error:
-        return render_template(
-            "error.html",
-            message="Kon de lijst met opgeslagen gerechten niet ophalen.",
-        )
 
+    meals = fetch_all_meals()
 
-
-
-@app.route("/meals/new/<int:meal_id>")
-def save_meal_from_api(meal_id):
-    try:
-        api_meal = mealdb_api.get_meal_detail(meal_id)
-        if not api_meal:
-            flash("Gerecht niet gevonden in TheMealDB.", "error")
-            return redirect(url_for("index"))
-
-        ingredients = mealdb_api.extract_ingredients_from_meal(api_meal)
-
-        # 1. Gerecht opslaan
-        db_service.call_procedure(
-            "add_meal",
-            (
-                int(api_meal["idMeal"]),
-                api_meal.get("strMeal"),
-                api_meal.get("strCategory"),
-                api_meal.get("strArea"),
-                api_meal.get("strInstructions"),
-                api_meal.get("strMealThumb"),
-            ),
-        )
-
-        # 2. Ingrediënten koppelen
-        for ing in ingredients:
-            db_service.call_procedure("link_meal_ingredient", (meal_id, ing))
-
-            # 3. Automatische allergenen-detectie
-            ing_lower = ing.lower()
-            for keyword, allergen in ALLERGEN_MAP.items():
-                if keyword in ing_lower:
-                    db_service.call_procedure(
-                        "link_ingredient_allergen",
-                        (ing, allergen)
-                    )
-
-        flash("Gerecht opgeslagen inclusief allergenen.", "success")
-        return redirect(url_for("meals_list"))
-
-    except Exception as e:
-        print(e)
-        flash("Er ging iets mis bij het opslaan van het gerecht.", "error")
-        return redirect(url_for("index"))
-
-
-
-@app.route("/meals/edit/<int:meal_id>", methods=["GET", "POST"])
-def edit_meal(meal_id):
-    if request.method == "GET":
-        meal = db_service.fetch_meal_by_id(meal_id)
-
-        if not meal:
-            flash("Gerecht niet gevonden.", "error")
-            return redirect(url_for("meals_list"))
-
-        return render_template("meal_form.html", meal=meal)
-
-    # POST: update
-    name = request.form.get("name", "").strip()
-    category = request.form.get("category", "").strip()
-    area = request.form.get("area", "").strip()
-    instructions = request.form.get("instructions", "").strip()
-    thumbnail_url = request.form.get("thumbnail_url", "").strip()
-
-    db_service.call_procedure(
-        "update_meal",
-        (meal_id, name, category, area, instructions, thumbnail_url),
+    return render_template(
+        "meals_list.html",
+        meals=meals
     )
 
-    flash("Gerecht bijgewerkt.", "success")
-    return redirect(url_for("meals_list"))
 
+# -------------------------
+# EDIT
+# -------------------------
+@app.route(
+    "/meal/<int:meal_id>/edit",
+    methods=["GET", "POST"]
+)
+def edit_meal(meal_id):
 
+    meal = fetch_meal_by_id(
+        meal_id
+    )
 
-
-
-@app.route("/meals/delete/<int:meal_id>", methods=["POST"])
-def delete_meal(meal_id):
-    try:
-        db_service.delete_meal(meal_id)
-        flash("Gerecht verwijderd.", "success")
-        return redirect(url_for("meals_list"))
-    except Error:
-        return render_template(
-            "error.html",
-            message="Kon het gerecht niet verwijderen.",
+    if not meal:
+        flash(
+            "Meal niet gevonden",
+            "error"
         )
+
+        return redirect(
+            url_for("meals_list")
+        )
+
+    if request.method == "POST":
+
+        update_meal_db(
+            meal_id,
+            request.form["name"],
+            request.form["category"],
+            request.form["area"],
+            request.form["instructions"],
+            request.form[
+                "thumbnail_url"
+            ]
+        )
+
+        flash(
+            "Meal bijgewerkt",
+            "success"
+        )
+
+        return redirect(
+            url_for(
+                "meal_detail",
+                meal_id=meal_id
+            )
+        )
+
+    return render_template(
+        "meal_form.html",
+        meal=meal
+    )
+
+
+# -------------------------
+# DELETE
+# -------------------------
+@app.route(
+    "/meal/<int:meal_id>/delete",
+    methods=["POST"]
+)
+def delete_meal_route(
+    meal_id
+):
+
+    delete_meal(meal_id)
+
+    flash(
+        "Meal verwijderd",
+        "success"
+    )
+
+    return redirect(
+        url_for("meals_list")
+    )
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
+
