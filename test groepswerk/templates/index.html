@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h1 class="card-title">Zoek gerechten op ingrediënt</h1>
+        <form method="post" action="{{ url_for('search') }}">
+            <div class="mb-3">
+                <label for="ingredient" class="form-label">Ingrediënt</label>
+                <input type="text" class="form-control" id="ingredient" name="ingredient"
+                       placeholder="bv. chicken, beef, tomato">
+            </div>
+            <button type="submit" class="btn btn-primary">Zoeken</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
