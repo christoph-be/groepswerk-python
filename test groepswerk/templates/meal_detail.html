@@ -51,7 +51,7 @@
       <p style="white-space: pre-line;">{{ local_meal.instructions }}</p>
 
       <a href="{{ url_for('edit_meal', meal_id=local_meal.id) }}" class="btn btn-warning">Bewerken</a>
-      <form method="post" action="{{ url_for('delete_meal', meal_id=local_meal.id) }}"
+      <form method="post" action="{{ url_for('delete_meal_route', meal_id=local_meal.id) }}"
             style="display:inline-block;"
             onsubmit="return confirm('Zeker weten dat je dit gerecht wilt verwijderen?');">
         <button type="submit" class="btn btn-danger">Verwijderen</button>

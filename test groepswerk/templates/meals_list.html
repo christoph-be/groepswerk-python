@@ -23,7 +23,7 @@
           <td>
             <a href="{{ url_for('meal_detail', meal_id=meal.id) }}" class="btn btn-sm btn-primary">Detail</a>
             <a href="{{ url_for('edit_meal', meal_id=meal.id) }}" class="btn btn-sm btn-warning">Bewerken</a>
-            <form method="post" action="{{ url_for('delete_meal', meal_id=meal.id) }}"
+            <form method="post" action="{{ url_for('delete_meal_route', meal_id=meal.id) }}"
                   style="display:inline-block;"
                   onsubmit="return confirm('Zeker weten dat je dit gerecht wilt verwijderen?');">
               <button type="submit" class="btn btn-sm btn-danger">Verwijderen</button>

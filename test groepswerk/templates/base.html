@@ -24,10 +24,13 @@
 
         <div class="d-flex align-items-center">
 
+        {% if session.get('user') %}
             <a class="nav-link text-white me-3"
                href="{{ url_for('meals_list') }}">
                 Opgeslagen gerechten
             </a>
+        {% endif %}
+
 
             {% if session.get('user') %}
 

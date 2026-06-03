@@ -159,3 +159,72 @@ def find_meals_by_ingredient(
         (ingredient,)
     )
 
+
+# -------------------------
+# USERS
+# -------------------------
+
+def create_user(
+    naam,
+    email
+):
+    return call_procedure(
+        "create_user",
+        (
+            naam,
+            email
+        )
+    )
+
+
+def get_user_by_email(
+    email
+):
+    conn = get_connection()
+
+    cursor = conn.cursor(
+        dictionary=True
+    )
+
+    cursor.execute(
+        """
+        SELECT *
+        FROM users
+        WHERE email = %s
+        """,
+        (email,)
+    )
+
+    user = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return user
+
+
+# -------------------------
+# FAVORITES
+# -------------------------
+
+def add_favorite(
+    user_id,
+    meal_id
+):
+    return call_procedure(
+        "add_favorite",
+        (
+            user_id,
+            meal_id
+        )
+    )
+
+
+def get_user_favorites(
+    user_id
+):
+    return call_procedure(
+        "get_user_favorites",
+        (user_id,)
+    )
+
