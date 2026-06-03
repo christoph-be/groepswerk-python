@@ -5,7 +5,10 @@ from flask import (
     request,
     redirect,
     url_for,
-    flash
+    flash,
+    session
+
+
 )
 
 from config import Config
@@ -55,29 +58,51 @@ def gebruiker():
     actie = request.form["actie"]
 
     if actie == "aanmaken":
-        antwoord = (
-            f"Gebruiker {naam} "
-            f"({email}) aangemaakt"
-        )
+
+        session["user"] = {
+            "naam": naam,
+            "email": email
+        }
 
         flash(
-            "Gebruiker aangemaakt",
+            f"{naam} aangemaakt en ingelogd",
             "success"
         )
 
-    else:
-        antwoord = (
-            f"{naam} aangemeld"
-        )
+    elif actie == "aanmelden":
+
+        session["user"] = {
+            "naam": naam,
+            "email": email
+        }
 
         flash(
-            "Aanmelden gelukt",
+            f"Welkom terug {naam}",
             "success"
         )
 
-    return render_template(
-        "index.html",
-        antwoord=antwoord
+    return redirect(
+        url_for("index")
+    )
+
+
+
+# -------------------------
+# Fake Logout
+# -------------------------
+
+@app.route("/logout")
+def logout():
+
+    session.pop("user", None)
+
+    flash(
+        "Je bent uitgelogd",
+        "success"
+    )
+
+    return redirect(
+        url_for("index")
     )
 
 
