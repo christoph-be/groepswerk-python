@@ -1,4 +1,4 @@
-```sql
+
 DROP DATABASE IF EXISTS recipe_search;
 CREATE DATABASE recipe_search
 CHARACTER SET utf8mb4
@@ -313,4 +313,4 @@ BEGIN
 END$$
 
 DELIMITER ;
-```
+
